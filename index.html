@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AVÉLUS — Haute Parfumerie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Montserrat:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #fafaf8;
+    --cream: #f4f0eb;
+    --warm-gray: #c8c4bc;
+    --mid-gray: #8a8680;
+    --dark-gray: #2a2825;
+    --gold: #b8a882;
+    --gold-light: #d4c5a0;
+    --font-display: 'Cormorant Garamond', serif;
+    --font-body: 'Montserrat', sans-serif;
+    --transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-weight: 300;
+    letter-spacing: 0.03em;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed; width: 8px; height: 8px;
+    background: var(--gold); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease;
+  }
+  .cursor-ring {
+    position: fixed; width: 36px; height: 36px;
+    border: 1px solid rgba(184,168,130,0.4); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease, width 0.4s ease, height 0.4s ease, border-color 0.3s;
+  }
+  body.cursor-hover .cursor { width: 14px; height: 14px; }
+  body.cursor-hover .cursor-ring { width: 54px; height: 54px; border-color: rgba(184,168,130,0.8); }
+
+  /* PAGE SYSTEM */
+  .page { display: none; min-height: 100vh; }
+  .page.active { display: block; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 2rem 4rem;
+    background: linear-gradient(to bottom, rgba(10,10,10,0.95) 0%, transparent 100%);
+    backdrop-filter: blur(2px);
+    transition: padding var(--transition);
+  }
+  nav.scrolled { padding: 1.2rem 4rem; background: rgba(10,10,10,0.97); }
+  .nav-logo {
+    font-family: var(--font-display); font-size: 1.6rem; font-weight: 300;
+    letter-spacing: 0.35em; color: var(--white); cursor: pointer;
+    transition: color var(--transition);
+  }
+  .nav-logo span { color: var(--gold); }
+  .nav-links { display: flex; gap: 3rem; list-style: none; align-items: center; }
+  .nav-links a {
+    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--warm-gray); text-decoration: none;
+    transition: color var(--transition); cursor: pointer;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: -4px; left: 0;
+    width: 0; height: 1px; background: var(--gold);
+    transition: width var(--transition);
+  }
+  .nav-links a:hover { color: var(--white); }
+  .nav-links a:hover::after { width: 100%; }
+  .nav-cart {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--warm-gray); cursor: pointer;
+    transition: color var(--transition);
+  }
+  .nav-cart:hover { color: var(--gold); }
+  .cart-count {
+    width: 18px; height: 18px; background: var(--gold);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 0.55rem; font-weight: 400; color: var(--black);
+    transition: transform 0.3s ease;
+  }
+  .cart-count.bump { transform: scale(1.4); }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+  .hamburger span { width: 24px; height: 1px; background: var(--white); transition: var(--transition); }
+
+  /* ====== HOME PAGE ====== */
+  /* HERO */
+  .hero {
+    height: 100vh; display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 80% at 60% 50%, #1a1510 0%, #0a0a0a 70%);
+  }
+  .hero-orb {
+    position: absolute; border-radius: 50%;
+    animation: float 8s ease-in-out infinite;
+  }
+  .hero-orb-1 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(184,168,130,0.06) 0%, transparent 70%);
+    right: 5%; top: 10%;
+  }
+  .hero-orb-2 {
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(184,168,130,0.04) 0%, transparent 70%);
+    left: 10%; bottom: 20%;
+    animation-delay: -4s;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-30px) scale(1.05); }
+  }
+  .hero-bottle {
+    position: absolute; right: 10%; top: 50%; transform: translateY(-50%);
+    width: 280px; height: 420px;
+    animation: bottleFloat 6s ease-in-out infinite;
+    opacity: 0; transition: opacity 1s ease 0.5s;
+  }
+  .hero-bottle.loaded { opacity: 1; }
+  @keyframes bottleFloat {
+    0%, 100% { transform: translateY(-50%) rotate(-1deg); }
+    50% { transform: translateY(calc(-50% - 15px)) rotate(1deg); }
+  }
+  .hero-content {
+    position: relative; z-index: 2; max-width: 600px;
+    padding: 0 4rem; margin-left: 5%;
+    opacity: 0; transform: translateY(40px);
+    transition: opacity 1s ease, transform 1s ease;
+  }
+  .hero-content.loaded { opacity: 1; transform: translateY(0); }
+  .hero-eyebrow {
+    font-size: 0.6rem; letter-spacing: 0.35em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 1.5rem;
+  }
+  .hero-title {
+    font-family: var(--font-display); font-size: clamp(3.5rem, 7vw, 6rem);
+    font-weight: 300; line-height: 1.05; margin-bottom: 2rem;
+    color: var(--white);
+  }
+  .hero-title em { font-style: italic; color: var(--gold-light); }
+  .hero-desc {
+    font-size: 0.75rem; line-height: 2; color: var(--mid-gray);
+    max-width: 380px; margin-bottom: 3rem; letter-spacing: 0.08em;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 1rem;
+    border: 1px solid var(--gold); padding: 1rem 2.5rem;
+    font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--gold); cursor: pointer; background: transparent;
+    transition: all var(--transition); position: relative; overflow: hidden;
+    font-family: var(--font-body);
+  }
+  .btn-primary::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--gold); transform: scaleX(0); transform-origin: left;
+    transition: transform var(--transition);
+  }
+  .btn-primary:hover { color: var(--black); }
+  .btn-primary:hover::before { transform: scaleX(1); }
+  .btn-primary span { position: relative; z-index: 1; }
+  .btn-primary .arrow { font-size: 0.9rem; transition: transform var(--transition); }
+  .btn-primary:hover .arrow { transform: translateX(5px); }
+  .hero-scroll {
+    position: absolute; bottom: 3rem; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    opacity: 0.5;
+  }
+  .hero-scroll span { font-size: 0.5rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--warm-gray); }
+  .scroll-line {
+    width: 1px; height: 60px; background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(0.8); }
+    50% { opacity: 1; transform: scaleY(1); }
+  }
+
+  /* BRAND STORY */
+  .brand-story {
+    padding: 10rem 4rem; display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8rem; align-items: center; max-width: 1400px; margin: 0 auto;
+  }
+  .story-visual {
+    position: relative; height: 600px;
+    opacity: 0; transform: translateX(-40px);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+  .story-visual.visible { opacity: 1; transform: translateX(0); }
+  .story-rect-1 {
+    position: absolute; top: 0; left: 0; right: 5rem; bottom: 5rem;
+    background: var(--dark-gray); border: 1px solid rgba(184,168,130,0.15);
+  }
+  .story-rect-2 {
+    position: absolute; top: 5rem; right: 0; bottom: 0; left: 5rem;
+    background: rgba(184,168,130,0.05); border: 1px solid rgba(184,168,130,0.1);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .story-monogram {
+    font-family: var(--font-display); font-size: 12rem; font-weight: 300;
+    color: rgba(184,168,130,0.12); letter-spacing: -0.05em; line-height: 1;
+    user-select: none;
+  }
+  .story-detail {
+    position: absolute; bottom: 3rem; left: 3rem;
+    font-family: var(--font-display); font-size: 0.9rem;
+    color: var(--gold); letter-spacing: 0.15em;
+    font-style: italic;
+  }
+  .story-text {
+    opacity: 0; transform: translateX(40px);
+    transition: opacity 0.9s ease 0.2s, transform 0.9s ease 0.2s;
+  }
+  .story-text.visible { opacity: 1; transform: translateX(0); }
+  .section-eyebrow {
+    font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 1.5rem; display: block;
+  }
+  .section-title {
+    font-family: var(--font-display); font-size: clamp(2.5rem, 4vw, 3.5rem);
+    font-weight: 300; line-height: 1.2; margin-bottom: 2rem;
+    color: var(--white);
+  }
+  .section-title em { font-style: italic; color: var(--gold-light); }
+  .section-text {
+    font-size: 0.75rem; line-height: 2.2; color: var(--mid-gray);
+    letter-spacing: 0.06em; margin-bottom: 1.5rem;
+  }
+  .divider { width: 40px; height: 1px; background: var(--gold); margin: 2.5rem 0; }
+
+  /* FEATURED SCENTS */
+  .featured { padding: 6rem 4rem 10rem; }
+  .featured-header { text-align: center; margin-bottom: 6rem; }
+  .products-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; max-width: 1400px; margin: 0 auto; }
+  .product-card {
+    position: relative; aspect-ratio: 3/4; overflow: hidden;
+    cursor: pointer; background: var(--dark-gray);
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .product-card.visible { opacity: 1; transform: translateY(0); }
+  .product-card:nth-child(2) { transition-delay: 0.15s; }
+  .product-card:nth-child(3) { transition-delay: 0.3s; }
+  .product-bg {
+    position: absolute; inset: 0; transition: transform 0.8s cubic-bezier(0.16,1,0.3,1);
+  }
+  .product-card:hover .product-bg { transform: scale(1.05); }
+  .product-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(10,10,10,0.9) 0%, transparent 60%);
+    transition: opacity var(--transition);
+  }
+  .product-card:hover .product-overlay { opacity: 1.2; }
+  .product-info {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 2.5rem; transform: translateY(10px);
+    transition: transform var(--transition);
+  }
+  .product-card:hover .product-info { transform: translateY(0); }
+  .product-family { font-size: 0.55rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.5rem; }
+  .product-name { font-family: var(--font-display); font-size: 1.8rem; font-weight: 300; margin-bottom: 0.3rem; color: var(--white); }
+  .product-sub { font-size: 0.65rem; color: var(--warm-gray); letter-spacing: 0.1em; margin-bottom: 1.5rem; }
+  .product-price { font-size: 0.7rem; color: var(--gold); letter-spacing: 0.15em; }
+  .product-cta {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, calc(-50% + 10px));
+    opacity: 0; transition: all var(--transition);
+    background: rgba(10,10,10,0.7); border: 1px solid var(--gold);
+    padding: 0.8rem 1.8rem; font-size: 0.55rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--gold); font-family: var(--font-body);
+    cursor: pointer; backdrop-filter: blur(4px);
+  }
+  .product-card:hover .product-cta { opacity: 1; transform: translate(-50%, -50%); }
+
+  /* MARQUEE */
+  .marquee-section { padding: 5rem 0; border-top: 1px solid rgba(184,168,130,0.1); border-bottom: 1px solid rgba(184,168,130,0.1); overflow: hidden; }
+  .marquee-track { display: flex; gap: 4rem; animation: marquee 30s linear infinite; white-space: nowrap; width: max-content; }
+  @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+  .marquee-item { font-family: var(--font-display); font-size: 1.2rem; font-weight: 300; font-style: italic; color: rgba(184,168,130,0.3); letter-spacing: 0.1em; }
+  .marquee-dot { color: var(--gold); font-style: normal; }
+
+  /* ====== PRODUCT PAGE ====== */
+  .product-page { padding-top: 100px; min-height: 100vh; }
+  .product-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; padding: 4rem 6rem 8rem; max-width: 1400px; margin: 0 auto; }
+  .product-gallery { position: sticky; top: 120px; height: fit-content; }
+  .gallery-main {
+    aspect-ratio: 3/4; background: var(--dark-gray);
+    border: 1px solid rgba(184,168,130,0.12);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    margin-bottom: 1rem;
+  }
+  .gallery-bottle { width: 55%; height: 70%; display: flex; align-items: center; justify-content: center; }
+  .gallery-thumbs { display: flex; gap: 1rem; }
+  .gallery-thumb {
+    width: 80px; height: 80px; background: var(--dark-gray);
+    border: 1px solid rgba(184,168,130,0.1); cursor: pointer;
+    transition: border-color var(--transition); display: flex; align-items: center; justify-content: center;
+    font-size: 0.5rem;
+  }
+  .gallery-thumb.active { border-color: var(--gold); }
+  .product-details { padding-top: 2rem; }
+  .product-detail-family { font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
+  .product-detail-name { font-family: var(--font-display); font-size: clamp(2.5rem, 4vw, 3.8rem); font-weight: 300; line-height: 1.1; margin-bottom: 0.5rem; }
+  .product-detail-tagline { font-family: var(--font-display); font-size: 1.1rem; font-style: italic; color: var(--gold-light); margin-bottom: 2rem; }
+  .product-detail-price { font-size: 1.5rem; font-weight: 200; letter-spacing: 0.05em; margin-bottom: 2.5rem; color: var(--white); }
+  .product-detail-price span { font-size: 0.65rem; color: var(--mid-gray); letter-spacing: 0.1em; text-transform: uppercase; margin-left: 0.5rem; }
+
+  /* Scent Notes */
+  .scent-notes { margin: 2.5rem 0; padding: 2rem; border: 1px solid rgba(184,168,130,0.15); }
+  .scent-notes-title { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; }
+  .notes-pyramid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .note-group { text-align: center; }
+  .note-label { font-size: 0.5rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mid-gray); margin-bottom: 0.8rem; display: block; }
+  .note-items { font-family: var(--font-display); font-size: 0.95rem; font-weight: 300; color: var(--warm-gray); line-height: 1.8; font-style: italic; }
+  .note-separator { width: 1px; background: rgba(184,168,130,0.15); display: none; }
+
+  /* Variant selector */
+  .variant-label { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mid-gray); margin-bottom: 1rem; }
+  .variants { display: flex; gap: 1rem; margin-bottom: 2.5rem; }
+  .variant-btn {
+    padding: 0.8rem 1.5rem; border: 1px solid rgba(184,168,130,0.2);
+    font-size: 0.65rem; letter-spacing: 0.15em; color: var(--warm-gray);
+    cursor: pointer; transition: all var(--transition); background: transparent;
+    font-family: var(--font-body); font-weight: 300;
+  }
+  .variant-btn:hover, .variant-btn.active {
+    border-color: var(--gold); color: var(--gold);
+    background: rgba(184,168,130,0.06);
+  }
+  .add-to-cart-btn {
+    width: 100%; padding: 1.2rem; background: var(--gold);
+    border: none; color: var(--black); font-family: var(--font-body);
+    font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase;
+    cursor: pointer; transition: all var(--transition); font-weight: 400;
+  }
+  .add-to-cart-btn:hover { background: var(--gold-light); transform: translateY(-2px); }
+  .add-to-cart-btn:active { transform: translateY(0); }
+
+  /* Scent Story */
+  .scent-story { margin-top: 4rem; padding-top: 3rem; border-top: 1px solid rgba(184,168,130,0.1); }
+  .scent-story-title { font-family: var(--font-display); font-size: 1.8rem; font-weight: 300; font-style: italic; margin-bottom: 1.5rem; color: var(--gold-light); }
+  .scent-story-text { font-size: 0.75rem; line-height: 2.2; color: var(--mid-gray); letter-spacing: 0.06em; }
+
+  /* ====== CART PAGE ====== */
+  .cart-page-content { padding: 140px 6rem 6rem; max-width: 1200px; margin: 0 auto; }
+  .page-title { font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem); font-weight: 300; margin-bottom: 4rem; }
+  .page-title span { font-style: italic; color: var(--gold-light); }
+  .cart-layout { display: grid; grid-template-columns: 1fr 380px; gap: 4rem; align-items: start; }
+  .cart-items { display: flex; flex-direction: column; gap: 0; }
+  .cart-item {
+    display: grid; grid-template-columns: 100px 1fr auto;
+    gap: 2rem; padding: 2rem 0; border-bottom: 1px solid rgba(184,168,130,0.12);
+    align-items: center; transition: all 0.4s ease;
+  }
+  .cart-item-img {
+    aspect-ratio: 3/4; background: var(--dark-gray);
+    border: 1px solid rgba(184,168,130,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; color: rgba(184,168,130,0.3);
+    overflow: hidden;
+  }
+  .cart-item-name { font-family: var(--font-display); font-size: 1.3rem; font-weight: 300; margin-bottom: 0.3rem; }
+  .cart-item-variant { font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mid-gray); margin-bottom: 1.5rem; }
+  .qty-control { display: flex; align-items: center; gap: 1rem; }
+  .qty-btn {
+    width: 30px; height: 30px; border: 1px solid rgba(184,168,130,0.2);
+    background: transparent; color: var(--warm-gray); font-size: 1rem;
+    cursor: pointer; transition: all var(--transition);
+    display: flex; align-items: center; justify-content: center; font-family: var(--font-body);
+  }
+  .qty-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .qty-num { font-size: 0.8rem; min-width: 20px; text-align: center; color: var(--white); }
+  .remove-btn {
+    font-size: 0.55rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: rgba(184,168,130,0.4); cursor: pointer; margin-top: 0.8rem;
+    background: none; border: none; font-family: var(--font-body);
+    transition: color var(--transition);
+  }
+  .remove-btn:hover { color: var(--gold); }
+  .cart-item-price { font-size: 1rem; font-weight: 200; text-align: right; white-space: nowrap; }
+  .cart-summary {
+    padding: 2.5rem; border: 1px solid rgba(184,168,130,0.15);
+    position: sticky; top: 120px;
+  }
+  .summary-title { font-family: var(--font-display); font-size: 1.4rem; font-weight: 300; font-style: italic; margin-bottom: 2rem; color: var(--gold-light); }
+  .summary-line { display: flex; justify-content: space-between; margin-bottom: 1rem; font-size: 0.7rem; color: var(--mid-gray); letter-spacing: 0.08em; }
+  .summary-total { display: flex; justify-content: space-between; padding-top: 1.5rem; margin-top: 1rem; border-top: 1px solid rgba(184,168,130,0.15); font-size: 0.85rem; color: var(--white); }
+  .checkout-btn {
+    width: 100%; padding: 1.2rem; background: var(--gold);
+    border: none; color: var(--black); font-family: var(--font-body);
+    font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase;
+    cursor: pointer; transition: all var(--transition); margin-top: 2rem;
+    font-weight: 400;
+  }
+  .checkout-btn:hover { background: var(--gold-light); }
+  .secure-badge { display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; font-size: 0.55rem; color: var(--mid-gray); letter-spacing: 0.1em; justify-content: center; }
+  .empty-cart { text-align: center; padding: 5rem 0; }
+  .empty-cart p { font-family: var(--font-display); font-size: 1.5rem; font-style: italic; color: var(--warm-gray); margin-bottom: 2rem; }
+
+  /* ====== CHECKOUT PAGE ====== */
+  .checkout-page-content { padding: 140px 6rem 6rem; max-width: 1100px; margin: 0 auto; }
+  .checkout-layout { display: grid; grid-template-columns: 1fr 380px; gap: 4rem; }
+  .checkout-form { }
+  .form-section { margin-bottom: 3rem; }
+  .form-section-title { font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(184,168,130,0.12); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+  .form-row.full { grid-template-columns: 1fr; }
+  .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+  .form-label { font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mid-gray); }
+  .form-input {
+    padding: 0.9rem 1rem; background: transparent;
+    border: 1px solid rgba(184,168,130,0.15); color: var(--white);
+    font-family: var(--font-body); font-size: 0.75rem; font-weight: 300;
+    transition: border-color var(--transition); outline: none; letter-spacing: 0.05em;
+  }
+  .form-input:focus { border-color: var(--gold); }
+  .form-input::placeholder { color: rgba(184,168,130,0.25); }
+  .stripe-notice {
+    display: flex; gap: 1rem; padding: 1.5rem;
+    background: rgba(184,168,130,0.05); border: 1px solid rgba(184,168,130,0.12);
+    margin-top: 2rem;
+  }
+  .stripe-icon { font-size: 1.5rem; flex-shrink: 0; }
+  .stripe-text { font-size: 0.7rem; line-height: 1.8; color: var(--mid-gray); }
+  .stripe-text strong { color: var(--warm-gray); font-weight: 400; }
+  .pay-btn {
+    width: 100%; padding: 1.3rem; background: var(--gold);
+    border: none; color: var(--black); font-family: var(--font-body);
+    font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase;
+    cursor: pointer; transition: all var(--transition); margin-top: 2rem;
+    font-weight: 400;
+  }
+  .pay-btn:hover { background: var(--gold-light); }
+  .order-summary-panel { background: var(--dark-gray); padding: 2.5rem; height: fit-content; position: sticky; top: 120px; border: 1px solid rgba(184,168,130,0.1); }
+  .order-items { margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1.2rem; }
+  .order-item { display: flex; gap: 1rem; align-items: center; }
+  .order-item-img { width: 50px; height: 65px; background: rgba(184,168,130,0.08); border: 1px solid rgba(184,168,130,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1rem; color: rgba(184,168,130,0.4); }
+  .order-item-info { flex: 1; }
+  .order-item-name { font-family: var(--font-display); font-size: 0.95rem; font-weight: 300; }
+  .order-item-meta { font-size: 0.55rem; color: var(--mid-gray); letter-spacing: 0.1em; margin-top: 0.2rem; }
+  .order-item-price { font-size: 0.8rem; color: var(--warm-gray); }
+
+  /* ====== AUTH PAGE ====== */
+  .auth-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding-top: 80px; }
+  .auth-container { width: 100%; max-width: 460px; padding: 4rem; border: 1px solid rgba(184,168,130,0.15); background: rgba(26,21,16,0.5); backdrop-filter: blur(10px); }
+  .auth-logo { font-family: var(--font-display); font-size: 1.8rem; font-weight: 300; letter-spacing: 0.35em; text-align: center; margin-bottom: 3rem; color: var(--white); }
+  .auth-logo span { color: var(--gold); }
+  .auth-tabs { display: flex; border-bottom: 1px solid rgba(184,168,130,0.12); margin-bottom: 2.5rem; }
+  .auth-tab { flex: 1; padding: 0.8rem; text-align: center; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mid-gray); cursor: pointer; border-bottom: 1px solid transparent; margin-bottom: -1px; transition: all var(--transition); }
+  .auth-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .auth-form { display: none; }
+  .auth-form.active { display: block; }
+  .auth-form .form-group { margin-bottom: 1.2rem; }
+  .auth-submit {
+    width: 100%; padding: 1rem; background: var(--gold);
+    border: none; color: var(--black); font-family: var(--font-body);
+    font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase;
+    cursor: pointer; transition: all var(--transition); margin-top: 1.5rem;
+    font-weight: 400;
+  }
+  .auth-submit:hover { background: var(--gold-light); }
+  .auth-divider { text-align: center; margin: 1.5rem 0; font-size: 0.55rem; color: var(--mid-gray); letter-spacing: 0.1em; }
+  .auth-note { text-align: center; margin-top: 1.5rem; font-size: 0.6rem; color: var(--mid-gray); line-height: 1.8; }
+  .auth-note span { color: var(--gold); cursor: pointer; }
+
+  /* SUCCESS PAGE */
+  .success-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; text-align: center; }
+  .success-content { max-width: 500px; }
+  .success-icon { font-size: 3rem; margin-bottom: 2rem; opacity: 0.8; }
+  .success-title { font-family: var(--font-display); font-size: 2.5rem; font-weight: 300; font-style: italic; margin-bottom: 1rem; color: var(--gold-light); }
+  .success-text { font-size: 0.75rem; color: var(--mid-gray); line-height: 2; margin-bottom: 3rem; }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 9000;
+    background: var(--dark-gray); border: 1px solid rgba(184,168,130,0.3);
+    padding: 1rem 1.8rem; font-size: 0.65rem; letter-spacing: 0.12em;
+    color: var(--warm-gray); transform: translateY(100px); opacity: 0;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex; align-items: center; gap: 1rem; backdrop-filter: blur(10px);
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast-dot { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; flex-shrink: 0; }
+
+  /* MOBILE NAV */
+  .mobile-nav {
+    display: none; position: fixed; inset: 0; background: rgba(10,10,10,0.98);
+    z-index: 999; align-items: center; justify-content: center; flex-direction: column; gap: 3rem;
+  }
+  .mobile-nav.open { display: flex; }
+  .mobile-nav a { font-family: var(--font-display); font-size: 2rem; font-weight: 300; font-style: italic; color: var(--white); text-decoration: none; cursor: pointer; transition: color var(--transition); }
+  .mobile-nav a:hover { color: var(--gold); }
+  .close-mobile { position: absolute; top: 2rem; right: 2rem; background: none; border: none; color: var(--warm-gray); font-size: 1.5rem; cursor: pointer; }
+
+  /* FOOTER */
+  footer {
+    padding: 5rem 4rem 3rem; border-top: 1px solid rgba(184,168,130,0.1);
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 4rem;
+  }
+  .footer-brand { }
+  .footer-logo { font-family: var(--font-display); font-size: 1.4rem; font-weight: 300; letter-spacing: 0.35em; color: var(--white); margin-bottom: 1rem; }
+  .footer-logo span { color: var(--gold); }
+  .footer-tagline { font-family: var(--font-display); font-size: 0.85rem; font-style: italic; color: var(--mid-gray); margin-bottom: 2rem; }
+  .footer-col-title { font-size: 0.55rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; }
+  .footer-links li { font-size: 0.65rem; color: var(--mid-gray); cursor: pointer; letter-spacing: 0.08em; transition: color var(--transition); }
+  .footer-links li:hover { color: var(--warm-gray); }
+  .footer-bottom { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid rgba(184,168,130,0.08); display: flex; justify-content: space-between; align-items: center; font-size: 0.55rem; color: rgba(184,168,130,0.3); letter-spacing: 0.1em; }
+
+  /* BOTTLE SVG */
+  .bottle-svg { width: 100%; height: 100%; }
+
+  @media (max-width: 1024px) {
+    nav { padding: 1.5rem 2rem; }
+    nav.scrolled { padding: 1rem 2rem; }
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .hero-bottle { display: none; }
+    .hero-content { margin-left: 0; padding: 0 2rem; }
+    .brand-story { grid-template-columns: 1fr; padding: 6rem 2rem; gap: 4rem; }
+    .story-visual { height: 300px; }
+    .products-grid { grid-template-columns: 1fr; }
+    .product-detail { grid-template-columns: 1fr; padding: 2rem; gap: 3rem; }
+    .product-gallery { position: static; }
+    .cart-layout { grid-template-columns: 1fr; }
+    .cart-summary { position: static; }
+    .checkout-layout { grid-template-columns: 1fr; }
+    .order-summary-panel { position: static; order: -1; }
+    .featured { padding: 4rem 2rem 6rem; }
+    .cart-page-content, .checkout-page-content { padding: 120px 2rem 4rem; }
+    footer { grid-template-columns: 1fr 1fr; gap: 3rem; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 600px) {
+    .hero-content { padding: 0 1.5rem; }
+    footer { grid-template-columns: 1fr; }
+    .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+    .notes-pyramid { grid-template-columns: 1fr; gap: 1rem; }
+  }
+
+  /* ANIMATIONS */
+  .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast">
+  <div class="toast-dot"></div>
+  <span id="toast-msg">Added to cart</span>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo" onclick="showPage('home')">AVÉ<span>L</span>US</div>
+  <ul class="nav-links">
+    <li><a onclick="showPage('home')">Maison</a></li>
+    <li><a onclick="showPage('collection')">Collection</a></li>
+    <li><a onclick="showPage('home'); setTimeout(()=>scrollTo('#brand-story'),300)">Notre Histoire</a></li>
+    <li><a onclick="showPage('auth')">Account</a></li>
+  </ul>
+  <div class="nav-cart" onclick="showPage('cart')">
+    <span>Cart</span>
+    <div class="cart-count" id="cart-count">0</div>
+  </div>
+  <div class="hamburger" id="hamburger" onclick="toggleMobileNav()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- Mobile Nav -->
+<div class="mobile-nav" id="mobile-nav">
+  <button class="close-mobile" onclick="toggleMobileNav()">✕</button>
+  <a onclick="showPage('home');toggleMobileNav()">Maison</a>
+  <a onclick="showPage('collection');toggleMobileNav()">Collection</a>
+  <a onclick="showPage('auth');toggleMobileNav()">Account</a>
+  <a onclick="showPage('cart');toggleMobileNav()">Cart (<span id="mobile-cart-count">0</span>)</a>
+</div>
+
+<!-- ==================== HOME PAGE ==================== -->
+<div class="page active" id="page-home">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+
+    <!-- Animated bottle -->
+    <div class="hero-bottle loaded" id="hero-bottle">
+      <svg viewBox="0 0 280 420" class="bottle-svg" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="bottleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:rgba(26,21,16,0.9)"/>
+            <stop offset="30%" style="stop-color:rgba(60,50,30,0.6)"/>
+            <stop offset="50%" style="stop-color:rgba(184,168,130,0.25)"/>
+            <stop offset="70%" style="stop-color:rgba(60,50,30,0.4)"/>
+            <stop offset="100%" style="stop-color:rgba(10,10,10,0.9)"/>
+          </linearGradient>
+          <linearGradient id="capGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#1a1510"/>
+            <stop offset="40%" style="stop-color:#b8a882"/>
+            <stop offset="100%" style="stop-color:#3a3020"/>
+          </linearGradient>
+          <linearGradient id="liquidGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" style="stop-color:rgba(120,90,40,0.5)"/>
+            <stop offset="100%" style="stop-color:rgba(200,170,100,0.15)"/>
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <!-- Cap -->
+        <rect x="100" y="20" width="80" height="55" rx="3" fill="url(#capGrad)" opacity="0.95"/>
+        <rect x="108" y="15" width="64" height="10" rx="2" fill="#b8a882" opacity="0.7"/>
+        <!-- Neck -->
+        <rect x="118" y="75" width="44" height="40" fill="#1a1510" opacity="0.9"/>
+        <line x1="118" y1="75" x2="118" y2="115" stroke="#b8a882" stroke-width="0.5" opacity="0.4"/>
+        <line x1="162" y1="75" x2="162" y2="115" stroke="#b8a882" stroke-width="0.5" opacity="0.4"/>
+        <!-- Shoulder -->
+        <path d="M 118 115 Q 85 130 70 160 L 210 160 Q 195 130 162 115 Z" fill="#1a1510" opacity="0.95"/>
+        <!-- Body -->
+        <rect x="70" y="160" width="140" height="230" rx="2" fill="url(#liquidGrad)"/>
+        <rect x="70" y="160" width="140" height="230" rx="2" fill="url(#bottleGrad)"/>
+        <!-- Glass edge highlights -->
+        <line x1="72" y1="160" x2="72" y2="390" stroke="#b8a882" stroke-width="0.8" opacity="0.3"/>
+        <line x1="208" y1="160" x2="208" y2="390" stroke="#b8a882" stroke-width="0.3" opacity="0.15"/>
+        <!-- Label area -->
+        <rect x="82" y="210" width="116" height="120" fill="rgba(250,245,235,0.04)" stroke="rgba(184,168,130,0.2)" stroke-width="0.5"/>
+        <!-- Label text -->
+        <text x="140" y="249" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="14" font-weight="300" letter-spacing="6" fill="rgba(184,168,130,0.8)">AVÉLUS</text>
+        <line x1="100" y1="258" x2="180" y2="258" stroke="rgba(184,168,130,0.3)" stroke-width="0.5"/>
+        <text x="140" y="274" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="8" font-weight="300" letter-spacing="2" fill="rgba(184,168,130,0.45)" font-style="italic">Eau de Parfum</text>
+        <text x="140" y="316" text-anchor="middle" font-family="Montserrat, sans-serif" font-size="6" letter-spacing="2" fill="rgba(184,168,130,0.3)">100 ml</text>
+        <!-- Base -->
+        <rect x="66" y="387" width="148" height="8" rx="1" fill="#0f0d09" opacity="0.9"/>
+        <!-- Shimmer effect -->
+        <rect x="85" y="165" width="3" height="215" fill="rgba(184,168,130,0.06)" filter="url(#glow)"/>
+      </svg>
+    </div>
+
+    <div class="hero-content loaded" id="hero-content">
+      <p class="hero-eyebrow">Nouvelle Collection 2025</p>
+      <h1 class="hero-title">The Art of<br><em>Invisible</em><br>Presence</h1>
+      <p class="hero-desc">Each fragrance is a silent autobiography — crafted for those who understand that the most powerful things in life leave no trace, only memory.</p>
+      <button class="btn-primary" onclick="showPage('collection')">
+        <span>Discover the Collection</span>
+        <span class="arrow">→</span>
+      </button>
+    </div>
+
+    <div class="hero-scroll">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- Marquee -->
+  <div class="marquee-section">
+    <div class="marquee-track">
+      <span class="marquee-item">Amber & Oud <span class="marquee-dot">·</span></span>
+      <span class="marquee-item">Vetiver Noir <span class="marquee-dot">·</span></span>
+      <span class="marquee-item">White Iris <span class="marquee-dot">·</span></span>
+      <span class="marquee-item">Sandalwood & Musk <span class="marquee-dot">·</span></span>
+      <span class="marquee-item">Bergamot Eclipse <span class="marquee-dot">·</span></span>
+      <span class="marquee-item">Black Rose <span class="marquee-dot">·</span></span>
+      <span class="marquee-item">Amber & Oud <span class="marquee-dot">·</span></span>
+      <span class="marquee-item">Vetiver Noir <span class="marquee-dot">·</span></span>
+      <span class="marquee-item">White Iris <span class="marquee-dot">·</span></span>
+      <span class="marquee-item">Sandalwood & Musk <span class="marquee-dot">·</span></span>
+      <span class="marquee-item">Bergamot Eclipse <span class="marquee-dot">·</span></span>
+      <span class="marquee-item">Black Rose <span class="marquee-dot">·</span></span>
+    </div>
+  </div>
+
+  <!-- Brand Story -->
+  <div id="brand-story">
+    <section class="brand-story">
+      <div class="story-visual" id="story-visual">
+        <div class="story-rect-1"></div>
+        <div class="story-rect-2">
+          <div class="story-monogram">A</div>
+        </div>
+        <div class="story-detail">Est. Paris, 2018</div>
+      </div>
+      <div class="story-text" id="story-text">
+        <span class="section-eyebrow">Notre Histoire</span>
+        <h2 class="section-title">Born from<br><em>Obsession</em></h2>
+        <div class="divider"></div>
+        <p class="section-text">AVÉLUS was founded in the quiet ateliers of Grasse by master perfumer Céleste Avélin — a belief that fragrance is not worn, but inhabited. Every bottle holds a world built from the rarest raw materials, aged with patience, and released only when the composition achieves absolute silence.</p>
+        <p class="section-text">We do not follow trends. We do not rush creation. We are architects of memory, designing invisible monuments that outlive the moment of wearing.</p>
+        <button class="btn-primary" style="margin-top:1rem" onclick="showPage('collection')">
+          <span>Explore our World</span>
+          <span class="arrow">→</span>
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Featured -->
+  <section class="featured">
+    <div class="featured-header fade-in" id="featured-header">
+      <span class="section-eyebrow">La Collection</span>
+      <h2 class="section-title">Signature <em>Scents</em></h2>
+    </div>
+    <div class="products-grid">
+      <div class="product-card" id="pc-1" onclick="showProduct(0)">
+        <div class="product-bg" style="background:linear-gradient(135deg,#1a1208 0%,#2d1f0a 100%)">
+          <svg viewBox="0 0 400 533" style="width:100%;height:100%;opacity:0.6" xmlns="http://www.w3.org/2000/svg">
+            <defs><radialGradient id="g1" cx="50%" cy="40%"><stop offset="0%" style="stop-color:#c8a855;stop-opacity:0.4"/><stop offset="100%" style="stop-color:transparent"/></radialGradient></defs>
+            <rect width="400" height="533" fill="url(#g1)"/>
+            <rect x="155" y="80" width="90" height="60" rx="3" fill="#8a6f2f" opacity="0.7"/>
+            <rect x="170" y="140" width="60" height="45" fill="#1a1208" opacity="0.9"/>
+            <path d="M170 185 Q140 200 125 230 L275 230 Q260 200 230 185Z" fill="#100c05"/>
+            <rect x="125" y="230" width="150" height="210" rx="2" fill="rgba(180,140,60,0.08)"/>
+            <rect x="125" y="230" width="150" height="210" rx="2" stroke="#b8960a" stroke-width="0.5" fill="none" opacity="0.3"/>
+            <text x="200" y="320" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="18" letter-spacing="6" fill="rgba(200,165,80,0.6)">AVÉLUS</text>
+          </svg>
+        </div>
+        <div class="product-overlay"></div>
+        <button class="product-cta">View Fragrance</button>
+        <div class="product-info">
+          <p class="product-family">Oriental · Woody</p>
+          <h3 class="product-name">Ambre Sacré</h3>
+          <p class="product-sub">Amber · Oud · Vanilla · Labdanum</p>
+          <p class="product-price">From $285</p>
+        </div>
+      </div>
+      <div class="product-card" id="pc-2" onclick="showProduct(1)">
+        <div class="product-bg" style="background:linear-gradient(135deg,#0d1018 0%,#131821 100%)">
+          <svg viewBox="0 0 400 533" style="width:100%;height:100%;opacity:0.6" xmlns="http://www.w3.org/2000/svg">
+            <defs><radialGradient id="g2" cx="50%" cy="40%"><stop offset="0%" style="stop-color:#9db5d0;stop-opacity:0.3"/><stop offset="100%" style="stop-color:transparent"/></radialGradient></defs>
+            <rect width="400" height="533" fill="url(#g2)"/>
+            <rect x="155" y="80" width="90" height="60" rx="3" fill="#3a4d66" opacity="0.7"/>
+            <rect x="170" y="140" width="60" height="45" fill="#0d1018" opacity="0.9"/>
+            <path d="M170 185 Q140 200 125 230 L275 230 Q260 200 230 185Z" fill="#080c14"/>
+            <rect x="125" y="230" width="150" height="210" rx="2" fill="rgba(80,120,180,0.06)"/>
+            <rect x="125" y="230" width="150" height="210" rx="2" stroke="#6080a0" stroke-width="0.5" fill="none" opacity="0.3"/>
+            <text x="200" y="320" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="18" letter-spacing="6" fill="rgba(150,180,220,0.6)">AVÉLUS</text>
+          </svg>
+        </div>
+        <div class="product-overlay"></div>
+        <button class="product-cta">View Fragrance</button>
+        <div class="product-info">
+          <p class="product-family">Aquatic · Floral</p>
+          <h3 class="product-name">Iris Nuit</h3>
+          <p class="product-sub">Iris · Vetiver · Cedarwood · Musk</p>
+          <p class="product-price">From $265</p>
+        </div>
+      </div>
+      <div class="product-card" id="pc-3" onclick="showProduct(2)">
+        <div class="product-bg" style="background:linear-gradient(135deg,#160d10 0%,#240d14 100%)">
+          <svg viewBox="0 0 400 533" style="width:100%;height:100%;opacity:0.6" xmlns="http://www.w3.org/2000/svg">
+            <defs><radialGradient id="g3" cx="50%" cy="40%"><stop offset="0%" style="stop-color:#d08090;stop-opacity:0.3"/><stop offset="100%" style="stop-color:transparent"/></radialGradient></defs>
+            <rect width="400" height="533" fill="url(#g3)"/>
+            <rect x="155" y="80" width="90" height="60" rx="3" fill="#6d2535" opacity="0.7"/>
+            <rect x="170" y="140" width="60" height="45" fill="#160d10" opacity="0.9"/>
+            <path d="M170 185 Q140 200 125 230 L275 230 Q260 200 230 185Z" fill="#0e0709"/>
+            <rect x="125" y="230" width="150" height="210" rx="2" fill="rgba(180,60,80,0.06)"/>
+            <rect x="125" y="230" width="150" height="210" rx="2" stroke="#a04060" stroke-width="0.5" fill="none" opacity="0.3"/>
+            <text x="200" y="320" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="18" letter-spacing="6" fill="rgba(210,130,145,0.6)">AVÉLUS</text>
+          </svg>
+        </div>
+        <div class="product-overlay"></div>
+        <button class="product-cta">View Fragrance</button>
+        <div class="product-info">
+          <p class="product-family">Floral · Chypre</p>
+          <h3 class="product-name">Rose Écarlate</h3>
+          <p class="product-sub">Damask Rose · Patchouli · Bergamot</p>
+          <p class="product-price">From $295</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-brand">
+      <div class="footer-logo">AVÉ<span>L</span>US</div>
+      <div class="footer-tagline">Haute Parfumerie, Grasse</div>
+      <p style="font-size:0.65rem;color:var(--mid-gray);line-height:2;max-width:280px">Crafting olfactory masterpieces since 2018. Every fragrance is a limited edition — numbered and signed.</p>
+    </div>
+    <div>
+      <p class="footer-col-title">Collection</p>
+      <ul class="footer-links">
+        <li onclick="showProduct(0)">Ambre Sacré</li>
+        <li onclick="showProduct(1)">Iris Nuit</li>
+        <li onclick="showProduct(2)">Rose Écarlate</li>
+        <li>Discovery Set</li>
+      </ul>
+    </div>
+    <div>
+      <p class="footer-col-title">Maison</p>
+      <ul class="footer-links">
+        <li>Notre Histoire</li>
+        <li>Atelier</li>
+        <li>Bespoke</li>
+        <li>Press</li>
+      </ul>
+    </div>
+    <div>
+      <p class="footer-col-title">Service</p>
+      <ul class="footer-links">
+        <li>Shipping</li>
+        <li>Returns</li>
+        <li>Contact</li>
+        <li onclick="showPage('auth')">Account</li>
+      </ul>
+    </div>
+    <div class="footer-bottom" style="grid-column:1/-1">
+      <span>© 2025 AVÉLUS. All rights reserved.</span>
+      <span>Privacy Policy · Terms · Cookies</span>
+      <span>Made with care in Paris</span>
+    </div>
+  </footer>
+</div>
+
+<!-- ==================== COLLECTION PAGE ==================== -->
+<div class="page" id="page-collection">
+  <div style="padding:140px 4rem 4rem;max-width:1400px;margin:0 auto">
+    <div class="featured-header" style="text-align:center;margin-bottom:6rem">
+      <span class="section-eyebrow">La Collection Complète</span>
+      <h2 class="section-title">All <em>Fragrances</em></h2>
+    </div>
+    <div class="products-grid">
+      <div class="product-card" style="opacity:1;transform:none" onclick="showProduct(0)">
+        <div class="product-bg" style="background:linear-gradient(135deg,#1a1208 0%,#2d1f0a 100%)">
+          <svg viewBox="0 0 400 533" style="width:100%;height:100%;opacity:0.5" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="cg1" cx="50%" cy="40%"><stop offset="0%" style="stop-color:#c8a855;stop-opacity:0.4"/><stop offset="100%" style="stop-color:transparent"/></radialGradient></defs><rect width="400" height="533" fill="url(#cg1)"/><rect x="155" y="80" width="90" height="60" rx="3" fill="#8a6f2f" opacity="0.7"/><rect x="170" y="140" width="60" height="45" fill="#1a1208" opacity="0.9"/><path d="M170 185 Q140 200 125 230 L275 230 Q260 200 230 185Z" fill="#100c05"/><rect x="125" y="230" width="150" height="210" rx="2" fill="rgba(180,140,60,0.08)" stroke="#b8960a" stroke-width="0.5"/><text x="200" y="320" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="18" letter-spacing="6" fill="rgba(200,165,80,0.6)">AVÉLUS</text></svg>
+        </div>
+        <div class="product-overlay"></div>
+        <button class="product-cta">View Fragrance</button>
+        <div class="product-info"><p class="product-family">Oriental · Woody</p><h3 class="product-name">Ambre Sacré</h3><p class="product-sub">Amber · Oud · Vanilla · Labdanum</p><p class="product-price">From $285</p></div>
+      </div>
+      <div class="product-card" style="opacity:1;transform:none" onclick="showProduct(1)">
+        <div class="product-bg" style="background:linear-gradient(135deg,#0d1018 0%,#131821 100%)">
+          <svg viewBox="0 0 400 533" style="width:100%;height:100%;opacity:0.5" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="cg2" cx="50%" cy="40%"><stop offset="0%" style="stop-color:#9db5d0;stop-opacity:0.3"/><stop offset="100%" style="stop-color:transparent"/></radialGradient></defs><rect width="400" height="533" fill="url(#cg2)"/><rect x="155" y="80" width="90" height="60" rx="3" fill="#3a4d66" opacity="0.7"/><rect x="170" y="140" width="60" height="45" fill="#0d1018" opacity="0.9"/><path d="M170 185 Q140 200 125 230 L275 230 Q260 200 230 185Z" fill="#080c14"/><rect x="125" y="230" width="150" height="210" rx="2" fill="rgba(80,120,180,0.06)" stroke="#6080a0" stroke-width="0.5"/><text x="200" y="320" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="18" letter-spacing="6" fill="rgba(150,180,220,0.6)">AVÉLUS</text></svg>
+        </div>
+        <div class="product-overlay"></div>
+        <button class="product-cta">View Fragrance</button>
+        <div class="product-info"><p class="product-family">Aquatic · Floral</p><h3 class="product-name">Iris Nuit</h3><p class="product-sub">Iris · Vetiver · Cedarwood · Musk</p><p class="product-price">From $265</p></div>
+      </div>
+      <div class="product-card" style="opacity:1;transform:none" onclick="showProduct(2)">
+        <div class="product-bg" style="background:linear-gradient(135deg,#160d10 0%,#240d14 100%)">
+          <svg viewBox="0 0 400 533" style="width:100%;height:100%;opacity:0.5" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="cg3" cx="50%" cy="40%"><stop offset="0%" style="stop-color:#d08090;stop-opacity:0.3"/><stop offset="100%" style="stop-color:transparent"/></radialGradient></defs><rect width="400" height="533" fill="url(#cg3)"/><rect x="155" y="80" width="90" height="60" rx="3" fill="#6d2535" opacity="0.7"/><rect x="170" y="140" width="60" height="45" fill="#160d10" opacity="0.9"/><path d="M170 185 Q140 200 125 230 L275 230 Q260 200 230 185Z" fill="#0e0709"/><rect x="125" y="230" width="150" height="210" rx="2" fill="rgba(180,60,80,0.06)" stroke="#a04060" stroke-width="0.5"/><text x="200" y="320" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="18" letter-spacing="6" fill="rgba(210,130,145,0.6)">AVÉLUS</text></svg>
+        </div>
+        <div class="product-overlay"></div>
+        <button class="product-cta">View Fragrance</button>
+        <div class="product-info"><p class="product-family">Floral · Chypre</p><h3 class="product-name">Rose Écarlate</h3><p class="product-sub">Damask Rose · Patchouli · Bergamot</p><p class="product-price">From $295</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PRODUCT PAGE ==================== -->
+<div class="page" id="page-product">
+  <div class="product-page">
+    <div class="product-detail">
+      <div class="product-gallery">
+        <div class="gallery-main" id="gallery-main">
+          <div class="gallery-bottle" id="gallery-bottle"></div>
+        </div>
+        <div class="gallery-thumbs">
+          <div class="gallery-thumb active">◈</div>
+          <div class="gallery-thumb">◉</div>
+          <div class="gallery-thumb">◊</div>
+        </div>
+      </div>
+      <div class="product-details" id="product-details">
+        <!-- Filled dynamically -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== CART PAGE ==================== -->
+<div class="page" id="page-cart">
+  <div class="cart-page-content">
+    <h1 class="page-title">Your <span>Selections</span></h1>
+    <div id="cart-content"></div>
+  </div>
+</div>
+
+<!-- ==================== CHECKOUT PAGE ==================== -->
+<div class="page" id="page-checkout">
+  <div class="checkout-page-content">
+    <h1 class="page-title" style="margin-bottom:3rem">Secure <span>Checkout</span></h1>
+    <div class="checkout-layout">
+      <div class="checkout-form">
+        <div class="form-section">
+          <p class="form-section-title">Contact Information</p>
+          <div class="form-row full"><div class="form-group"><label class="form-label">Email Address</label><input class="form-input" type="email" placeholder="your@email.com" autocomplete="email"></div></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">First Name</label><input class="form-input" type="text" placeholder="Jean" autocomplete="given-name"></div>
+            <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" type="text" placeholder="Dupont" autocomplete="family-name"></div>
+          </div>
+        </div>
+        <div class="form-section">
+          <p class="form-section-title">Shipping Address</p>
+          <div class="form-row full"><div class="form-group"><label class="form-label">Address Line 1</label><input class="form-input" type="text" placeholder="12 Rue de la Paix" autocomplete="address-line1"></div></div>
+          <div class="form-row full"><div class="form-group"><label class="form-label">Address Line 2 (Optional)</label><input class="form-input" type="text" placeholder="Apt, Suite, etc." autocomplete="address-line2"></div></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">City</label><input class="form-input" type="text" placeholder="Paris" autocomplete="address-level2"></div>
+            <div class="form-group"><label class="form-label">Postal Code</label><input class="form-input" type="text" placeholder="75001" autocomplete="postal-code"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Country</label><input class="form-input" type="text" placeholder="France" autocomplete="country-name"></div>
+            <div class="form-group"><label class="form-label">Phone</label><input class="form-input" type="tel" placeholder="+33 1 00 00 00 00" autocomplete="tel"></div>
+          </div>
+        </div>
+        <div class="stripe-notice">
+          <div class="stripe-icon">🔒</div>
+          <div class="stripe-text">
+            <strong>Secure payment via Stripe Checkout.</strong><br>
+            Clicking "Proceed to Payment" will redirect you to Stripe's secure, PCI-compliant hosted checkout page. Your card details are never stored on our servers. We accept Visa, Mastercard, Amex, Apple Pay, and Google Pay.
+          </div>
+        </div>
+        <button class="pay-btn" onclick="proceedToStripe()">Proceed to Secure Payment →</button>
+        <p style="text-align:center;font-size:0.55rem;color:var(--mid-gray);margin-top:1rem;letter-spacing:0.1em">Powered by Stripe · SSL Encrypted · PCI Compliant</p>
+      </div>
+      <div class="order-summary-panel">
+        <p class="summary-title">Order Summary</p>
+        <div class="order-items" id="checkout-items"></div>
+        <div style="border-top:1px solid rgba(184,168,130,0.12);padding-top:1.5rem">
+          <div class="summary-line"><span>Subtotal</span><span id="checkout-subtotal">$0</span></div>
+          <div class="summary-line"><span>Shipping</span><span>Complimentary</span></div>
+          <div class="summary-line"><span>Gift Wrapping</span><span>Included</span></div>
+          <div class="summary-total"><span>Total</span><span id="checkout-total">$0</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== AUTH PAGE ==================== -->
+<div class="page" id="page-auth">
+  <div class="auth-page">
+    <div class="auth-container">
+      <div class="auth-logo">AVÉ<span>L</span>US</div>
+      <div class="auth-tabs">
+        <div class="auth-tab active" onclick="switchAuthTab('login')">Sign In</div>
+        <div class="auth-tab" onclick="switchAuthTab('register')">Create Account</div>
+      </div>
+
+      <!-- Login Form -->
+      <div class="auth-form active" id="form-login">
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="login-email" type="email" placeholder="your@email.com" autocomplete="email"></div>
+        <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="login-password" type="password" placeholder="••••••••" autocomplete="current-password"></div>
+        <button class="auth-submit" onclick="handleLogin()">Sign In to AVÉLUS</button>
+        <div class="auth-divider">or</div>
+        <div class="auth-note">Don't have an account? <span onclick="switchAuthTab('register')">Create one</span><br><span style="cursor:default">Forgot password? </span><span>Reset here</span></div>
+      </div>
+
+      <!-- Register Form -->
+      <div class="auth-form" id="form-register">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">First Name</label><input class="form-input" id="reg-firstname" type="text" placeholder="Jean" autocomplete="given-name"></div>
+          <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" id="reg-lastname" type="text" placeholder="Dupont" autocomplete="family-name"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="reg-email" type="email" placeholder="your@email.com" autocomplete="email"></div>
+        <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="reg-password" type="password" placeholder="Min. 8 characters" autocomplete="new-password"></div>
+        <div class="form-group"><label class="form-label">Confirm Password</label><input class="form-input" id="reg-confirm" type="password" placeholder="Repeat password" autocomplete="new-password"></div>
+        <p style="font-size:0.55rem;color:var(--mid-gray);line-height:1.8;margin-top:0.5rem">By creating an account, you agree to our Privacy Policy and Terms of Service. Your data is encrypted and never shared.</p>
+        <button class="auth-submit" onclick="handleRegister()">Create Account</button>
+        <div class="auth-note">Already have an account? <span onclick="switchAuthTab('login')">Sign in</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SUCCESS PAGE ==================== -->
+<div class="page" id="page-success">
+  <div class="success-page">
+    <div class="success-content">
+      <div class="success-icon">✦</div>
+      <h2 class="success-title">Merci</h2>
+      <p style="font-family:var(--font-display);font-size:1.1rem;font-style:italic;color:var(--gold-light);margin-bottom:1rem">Your order is confirmed</p>
+      <p class="success-text">A confirmation has been sent to your email. Your fragrance will be carefully wrapped and dispatched within 24 hours via our complimentary white-glove delivery service.</p>
+      <p style="font-size:0.6rem;letter-spacing:0.2em;color:var(--mid-gray);text-transform:uppercase;margin-bottom:3rem">Order #AVL-<span id="order-num">28491</span></p>
+      <button class="btn-primary" onclick="showPage('home')"><span>Return to Maison</span><span class="arrow">→</span></button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const PRODUCTS = [
+  {
+    id: 0, name: 'Ambre Sacré', family: 'Oriental · Woody',
+    tagline: 'A prayer written in smoke',
+    desc: 'Ambre Sacré opens with a whisper of sacred resins — myrrh and benzoin — before the heart reveals an ancient Oud, aged twelve years in Laotian forests. The dry-down is a slow dissolution into golden amber and a touch of vanilla so pale it is almost memory.',
+    top: ['Myrrh', 'Bergamot', 'Saffron'],
+    heart: ['Oud', 'Benzoin', 'Rose Absolute'],
+    base: ['Amber', 'Vanilla', 'Labdanum'],
+    variants: [{label:'50 ml', price:285},{label:'100 ml', price:395},{label:'200 ml', price:545}],
+    story: 'In the souks of Marrakech, there is a moment at dawn when the incense from a hundred doorways lifts in one breath. Ambre Sacré was born from that singular inhalation — a perfume for those who collect moments, not things. It does not announce itself. It arrives, and it remains.',
+    color: 'linear-gradient(135deg,#1a1208 0%,#2d1f0a 100%)',
+    accent: '#b8960a',
+    bottleColor: '#8a6f2f', bodyAccent: 'rgba(200,165,80,0.6)'
+  },
+  {
+    id: 1, name: 'Iris Nuit', family: 'Aquatic · Floral',
+    tagline: 'Where water becomes light',
+    desc: 'Iris Nuit begins at the edge of a midnight garden — dew on stone, the ghost of iris against dark vetiver roots. A fragrance of extraordinary restraint; its architecture is silence. Each element is present but none dominates, achieving a balance as precise as a breath held between tides.',
+    top: ['Aldehydes', 'Cardamom', 'Pink Pepper'],
+    heart: ['Iris Pallida', 'Violet Leaf', 'Hedione'],
+    base: ['Vetiver', 'Cedarwood', 'White Musk'],
+    variants: [{label:'50 ml', price:265},{label:'100 ml', price:365},{label:'200 ml', price:495}],
+    story: 'The iris takes seven years to bloom into perfumery — from root to absolute. Iris Nuit honours this patience. It was composed over four years, with the heart note rebuilt seventeen times until the iris sat exactly as found: powdery yet mineral, feminine yet architectural. A perfume for those who appreciate what is earned.',
+    color: 'linear-gradient(135deg,#0d1018 0%,#131821 100%)',
+    accent: '#6080a0',
+    bottleColor: '#3a4d66', bodyAccent: 'rgba(150,180,220,0.6)'
+  },
+  {
+    id: 2, name: 'Rose Écarlate', family: 'Floral · Chypre',
+    tagline: 'Velvet on obsidian',
+    desc: 'Rose Écarlate is an act of seduction built upon contradiction. Damask rose petals — harvested at dawn in Kazanlak — are set against the darkness of patchouli and the cool sharpness of bergamot. It is warmth that casts a cold shadow. A red rose pressed between the pages of a noir novel.',
+    top: ['Bergamot', 'Blackcurrant', 'Elemi'],
+    heart: ['Damask Rose', 'Geranium', 'Ylang Ylang'],
+    base: ['Patchouli', 'Oakmoss', 'Ambrette Seed'],
+    variants: [{label:'50 ml', price:295},{label:'100 ml', price:415},{label:'200 ml', price:575}],
+    story: 'The Rose Valley of Bulgaria yields its harvest for two weeks each year. During those fourteen days, pickers work before dawn — the heat of day destroys the volatile molecules that make Damask rose the most prized ingredient in perfumery. Rose Écarlate captures this urgency: a fragrance that understands scarcity, and becomes more precious for it.',
+    color: 'linear-gradient(135deg,#160d10 0%,#240d14 100%)',
+    accent: '#a04060',
+    bottleColor: '#6d2535', bodyAccent: 'rgba(210,130,145,0.6)'
+  }
+];
+
+// ===== CART STATE =====
+let cart = [];
+let currentVariant = 0;
+let currentProduct = null;
+
+function loadCart() {
+  try {
+    const stored = localStorage.getItem('avelus_cart');
+    if (stored) cart = JSON.parse(stored);
+  } catch(e) { cart = []; }
+  updateCartUI();
+}
+
+function saveCart() {
+  try { localStorage.setItem('avelus_cart', JSON.stringify(cart)); } catch(e) {}
+  updateCartUI();
+}
+
+function updateCartUI() {
+  const total = cart.reduce((s,i) => s + i.qty, 0);
+  document.getElementById('cart-count').textContent = total;
+  const mcc = document.getElementById('mobile-cart-count');
+  if (mcc) mcc.textContent = total;
+  if (total > 0) {
+    const cc = document.getElementById('cart-count');
+    cc.classList.add('bump');
+    setTimeout(() => cc.classList.remove('bump'), 400);
+  }
+}
+
+// ===== PAGE SYSTEM =====
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  window.scrollTo(0, 0);
+  if (name === 'cart') renderCart();
+  if (name === 'checkout') renderCheckout();
+}
+
+function showProduct(idx) {
+  currentProduct = PRODUCTS[idx];
+  currentVariant = 0;
+  renderProduct();
+  showPage('product');
+}
+
+// ===== RENDER PRODUCT =====
+function renderProduct() {
+  const p = currentProduct;
+  const v = p.variants[currentVariant];
+
+  // Bottle SVG in gallery
+  document.getElementById('gallery-bottle').innerHTML = makeBottleSVG(p, 200, 300);
+  document.getElementById('gallery-main').style.background = p.color;
+
+  // Details
+  document.getElementById('product-details').innerHTML = `
+    <p class="product-detail-family">${p.family}</p>
+    <h1 class="product-detail-name">${p.name}</h1>
+    <p class="product-detail-tagline">${p.tagline}</p>
+    <p class="product-detail-price">$${v.price} <span>${v.label}</span></p>
+    <p class="section-text">${p.desc}</p>
+    <div class="scent-notes">
+      <p class="scent-notes-title">Olfactory Composition</p>
+      <div class="notes-pyramid">
+        <div class="note-group">
+          <span class="note-label">Top Notes</span>
+          <div class="note-items">${p.top.join('<br>')}</div>
+        </div>
+        <div class="note-group" style="border-left:1px solid rgba(184,168,130,0.12);border-right:1px solid rgba(184,168,130,0.12);padding:0 1rem">
+          <span class="note-label">Heart Notes</span>
+          <div class="note-items">${p.heart.join('<br>')}</div>
+        </div>
+        <div class="note-group">
+          <span class="note-label">Base Notes</span>
+          <div class="note-items">${p.base.join('<br>')}</div>
+        </div>
+      </div>
+    </div>
+    <p class="variant-label">Select Size</p>
+    <div class="variants" id="variant-btns">
+      ${p.variants.map((vv,i) => `<button class="variant-btn ${i===currentVariant?'active':''}" onclick="selectVariant(${i})">${vv.label}<br><span style="font-size:0.55rem;opacity:0.7">$${vv.price}</span></button>`).join('')}
+    </div>
+    <button class="add-to-cart-btn" onclick="addToCart()">Add to Cart — $${v.price}</button>
+    <div class="scent-story">
+      <h3 class="scent-story-title">The Scent Story</h3>
+      <p class="scent-story-text">${p.story}</p>
+    </div>
+    <div style="display:flex;gap:3rem;margin-top:3rem;padding-top:2rem;border-top:1px solid rgba(184,168,130,0.1)">
+      <div style="text-align:center">
+        <p style="font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--mid-gray);margin-bottom:0.3rem">Longevity</p>
+        <p style="font-family:var(--font-display);font-size:1rem;color:var(--warm-gray)">10–14 hrs</p>
+      </div>
+      <div style="text-align:center">
+        <p style="font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--mid-gray);margin-bottom:0.3rem">Sillage</p>
+        <p style="font-family:var(--font-display);font-size:1rem;color:var(--warm-gray)">Pronounced</p>
+      </div>
+      <div style="text-align:center">
+        <p style="font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--mid-gray);margin-bottom:0.3rem">Concentration</p>
+        <p style="font-family:var(--font-display);font-size:1rem;color:var(--warm-gray)">Eau de Parfum</p>
+      </div>
+    </div>
+  `;
+}
+
+function selectVariant(i) {
+  currentVariant = i;
+  renderProduct();
+}
+
+function addToCart() {
+  const p = currentProduct;
+  const v = p.variants[currentVariant];
+  const key = `${p.id}-${v.label}`;
+  const existing = cart.find(c => c.key === key);
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({ key, id: p.id, name: p.name, variant: v.label, price: v.price, qty: 1 });
+  }
+  saveCart();
+  showToast(`${p.name} (${v.label}) added to cart`);
+}
+
+function makeBottleSVG(p, w, h) {
+  return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="bg${p.id}" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:rgba(10,10,10,0.9)"/>
+        <stop offset="35%" style="stop-color:rgba(40,30,15,0.6)"/>
+        <stop offset="50%" style="stop-color:rgba(184,168,130,0.2)"/>
+        <stop offset="65%" style="stop-color:rgba(40,30,15,0.5)"/>
+        <stop offset="100%" style="stop-color:rgba(10,10,10,0.9)"/>
+      </linearGradient>
+      <linearGradient id="cap${p.id}" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#0f0d09"/>
+        <stop offset="50%" style="stop-color:${p.bottleColor}"/>
+        <stop offset="100%" style="stop-color:#1a1510"/>
+      </linearGradient>
+    </defs>
+    <rect x="${w*0.35}" y="${h*0.04}" width="${w*0.3}" height="${h*0.17}" rx="2" fill="url(#cap${p.id})"/>
+    <rect x="${w*0.39}" y="${h*0.02}" width="${w*0.22}" height="${h*0.04}" rx="1" fill="${p.bottleColor}" opacity="0.6"/>
+    <rect x="${w*0.41}" y="${h*0.21}" width="${w*0.18}" height="${h*0.12}" fill="#111008" opacity="0.9"/>
+    <path d="M${w*0.41} ${h*0.33} Q${w*0.28} ${h*0.38} ${w*0.24} ${h*0.46} L${w*0.76} ${h*0.46} Q${w*0.72} ${h*0.38} ${w*0.59} ${h*0.33}Z" fill="#0d0b07"/>
+    <rect x="${w*0.24}" y="${h*0.46}" width="${w*0.52}" height="${h*0.47}" rx="1" fill="url(#bg${p.id})"/>
+    <line x1="${w*0.245}" y1="${h*0.46}" x2="${w*0.245}" y2="${h*0.93}" stroke="#b8a882" stroke-width="0.5" opacity="0.25"/>
+    <rect x="${w*0.30}" y="${h*0.55}" width="${w*0.40}" height="${h*0.27}" fill="rgba(240,230,210,0.03)" stroke="rgba(184,168,130,0.2)" stroke-width="0.5"/>
+    <text x="${w*0.5}" y="${h*0.68}" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="${w*0.075}" letter-spacing="3" fill="${p.bodyAccent}">AVÉLUS</text>
+    <text x="${w*0.5}" y="${h*0.75}" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="${w*0.035}" fill="rgba(184,168,130,0.4)" font-style="italic">Eau de Parfum</text>
+    <rect x="${w*0.22}" y="${h*0.93}" width="${w*0.56}" height="${h*0.025}" rx="1" fill="#080704" opacity="0.9"/>
+  </svg>`;
+}
+
+// ===== CART RENDER =====
+function renderCart() {
+  const el = document.getElementById('cart-content');
+  if (cart.length === 0) {
+    el.innerHTML = `<div class="empty-cart"><p>Your cart is empty</p><button class="btn-primary" onclick="showPage('collection')"><span>Explore Collection</span><span class="arrow">→</span></button></div>`;
+    return;
+  }
+  const subtotal = cart.reduce((s,i) => s + i.price * i.qty, 0);
+  el.innerHTML = `
+    <div class="cart-layout">
+      <div class="cart-items" id="cart-items-list">${renderCartItems()}</div>
+      <div class="cart-summary">
+        <p class="summary-title">Order Summary</p>
+        <div class="summary-line"><span>Subtotal (${cart.reduce((s,i)=>s+i.qty,0)} items)</span><span>$${subtotal.toLocaleString()}</span></div>
+        <div class="summary-line"><span>Shipping</span><span style="color:var(--gold)">Complimentary</span></div>
+        <div class="summary-line"><span>Gift Wrapping</span><span style="color:var(--gold)">Included</span></div>
+        <div class="summary-total"><span style="letter-spacing:0.1em;text-transform:uppercase;font-size:0.6rem">Total</span><span style="font-size:1.1rem">$${subtotal.toLocaleString()}</span></div>
+        <button class="checkout-btn" onclick="showPage('checkout')">Proceed to Checkout →</button>
+        <div class="secure-badge">🔒 <span>Secured by Stripe · SSL Encrypted</span></div>
+      </div>
+    </div>`;
+}
+
+function renderCartItems() {
+  return cart.map((item, idx) => {
+    const p = PRODUCTS[item.id];
+    return `<div class="cart-item" id="cart-item-${idx}">
+      <div class="cart-item-img" style="background:${p.color}">${makeBottleSVG(p, 60, 80)}</div>
+      <div>
+        <p class="cart-item-name">${item.name}</p>
+        <p class="cart-item-variant">${item.variant} · Eau de Parfum</p>
+        <div class="qty-control">
+          <button class="qty-btn" onclick="updateQty(${idx}, -1)">−</button>
+          <span class="qty-num">${item.qty}</span>
+          <button class="qty-btn" onclick="updateQty(${idx}, 1)">+</button>
+        </div>
+        <button class="remove-btn" onclick="removeItem(${idx})">Remove</button>
+      </div>
+      <div class="cart-item-price">$${(item.price * item.qty).toLocaleString()}</div>
+    </div>`;
+  }).join('');
+}
+
+function updateQty(idx, delta) {
+  cart[idx].qty = Math.max(1, cart[idx].qty + delta);
+  saveCart();
+  renderCart();
+}
+
+function removeItem(idx) {
+  const el = document.getElementById(`cart-item-${idx}`);
+  if (el) { el.style.opacity = '0'; el.style.transform = 'translateX(-20px)'; }
+  setTimeout(() => { cart.splice(idx, 1); saveCart(); renderCart(); }, 350);
+}
+
+// ===== CHECKOUT RENDER =====
+function renderCheckout() {
+  const items = document.getElementById('checkout-items');
+  const subtotal = cart.reduce((s,i) => s + i.price * i.qty, 0);
+  items.innerHTML = cart.map(item => {
+    const p = PRODUCTS[item.id];
+    return `<div class="order-item">
+      <div class="order-item-img" style="background:${p.color}">${makeBottleSVG(p, 40, 55)}</div>
+      <div class="order-item-info">
+        <p class="order-item-name">${item.name}</p>
+        <p class="order-item-meta">${item.variant} · Qty ${item.qty}</p>
+      </div>
+      <p class="order-item-price">$${(item.price * item.qty).toLocaleString()}</p>
+    </div>`;
+  }).join('');
+  document.getElementById('checkout-subtotal').textContent = '$' + subtotal.toLocaleString();
+  document.getElementById('checkout-total').textContent = '$' + subtotal.toLocaleString();
+}
+
+function proceedToStripe() {
+  if (cart.length === 0) { showToast('Your cart is empty'); return; }
+  showToast('Redirecting to Stripe Checkout...');
+  setTimeout(() => {
+    // In production: redirect to your backend /create-checkout-session
+    // which creates a Stripe Checkout Session and returns the URL
+    // window.location.href = '/api/checkout/create-session';
+    cart = [];
+    saveCart();
+    document.getElementById('order-num').textContent = Math.floor(10000 + Math.random() * 90000);
+    showPage('success');
+  }, 1800);
+}
+
+// ===== AUTH =====
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t, i) => {
+    t.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'register' && i === 1));
+  });
+  document.getElementById('form-login').classList.toggle('active', tab === 'login');
+  document.getElementById('form-register').classList.toggle('active', tab === 'register');
+}
+
+function sanitize(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function validateEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+
+function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-password').value;
+  if (!validateEmail(email)) { showToast('Please enter a valid email address'); return; }
+  if (pass.length < 6) { showToast('Password must be at least 6 characters'); return; }
+  // In production: POST to /api/auth/login with CSRF token, receive JWT
+  showToast(`Welcome back to AVÉLUS`);
+  setTimeout(() => showPage('home'), 1500);
+}
+
+function handleRegister() {
+  const first = sanitize(document.getElementById('reg-firstname').value.trim());
+  const last = sanitize(document.getElementById('reg-lastname').value.trim());
+  const email = document.getElementById('reg-email').value.trim();
+  const pass = document.getElementById('reg-password').value;
+  const confirm = document.getElementById('reg-confirm').value;
+  if (!first || !last) { showToast('Please enter your full name'); return; }
+  if (!validateEmail(email)) { showToast('Please enter a valid email address'); return; }
+  if (pass.length < 8) { showToast('Password must be at least 8 characters'); return; }
+  if (pass !== confirm) { showToast('Passwords do not match'); return; }
+  // In production: POST to /api/auth/register — password hashed server-side with bcrypt
+  showToast(`Welcome to AVÉLUS, ${first}`);
+  setTimeout(() => showPage('home'), 1500);
+}
+
+// ===== TOAST =====
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ===== SCROLL ANIMATIONS =====
+function initScrollObserver() {
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('#story-visual, #story-text, .product-card, #featured-header, .fade-in').forEach(el => obs.observe(el));
+}
+
+// ===== CURSOR =====
+function initCursor() {
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+  });
+
+  function animateRing() {
+    rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('button, a, .product-card, .nav-cart, .nav-logo, .gallery-thumb').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+  });
+}
+
+// ===== NAV SCROLL =====
+function initNav() {
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+}
+
+function toggleMobileNav() {
+  document.getElementById('mobile-nav').classList.toggle('open');
+}
+
+function scrollTo(selector) {
+  const el = document.querySelector(selector);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded', () => {
+  loadCart();
+  initScrollObserver();
+  initCursor();
+  initNav();
+});
+</script>
+</body>
+</html>
